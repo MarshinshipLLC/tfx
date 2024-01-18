@@ -34,6 +34,7 @@ import tensorflow as tf
 from tensorflow import keras
 import tensorflow_transform as tft
 import tfx.v1 as tfx
+from tfx.v1.keras_lib import tf_keras
 from tfx_bsl.public import tfxio
 
 from tensorflow_cloud.core import machine_config
@@ -167,7 +168,7 @@ def _get_hyperparameters() -> keras_tuner.HyperParameters:
   return hp
 
 
-def _build_keras_model(hparams: keras_tuner.HyperParameters) -> tf.keras.Model:
+def _build_keras_model(hparams: keras_tuner.HyperParameters) -> tf_keras.Model:
   """Creates a DNN Keras model for classifying penguin data.
 
   Args:
@@ -320,7 +321,7 @@ def run_fn(fn_args: tfx.components.FnArgs):
     model = _build_keras_model(hparams)
 
   # Write logs to path
-  tensorboard_callback = tf.keras.callbacks.TensorBoard(
+  tensorboard_callback = tf_keras.callbacks.TensorBoard(
       log_dir=fn_args.model_run_dir, update_freq='epoch')
 
   model.fit(

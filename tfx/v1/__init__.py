@@ -26,6 +26,7 @@ except ImportError as e:
     raise
 
 from tfx.v1 import dsl
+from tfx.v1 import keras_lib
 from tfx.v1 import proto
 from tfx.v1 import testing
 from tfx.v1 import types
