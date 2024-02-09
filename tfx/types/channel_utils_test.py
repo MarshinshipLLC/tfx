@@ -123,6 +123,16 @@ class ChannelUtilsTest(tf.test.TestCase):
           str1.future()[0].value + ph.execution_invocation().pipeline_run_id
       )
 
+  def testAllowEmptyFrom(self):
+    chan = channel.Channel(type=standard_artifacts.String)
+    empty_allowed_channel = channel_utils.allow_empty_from(chan)
+
+    self.assertEqual(empty_allowed_channel.type, chan.type)
+    self.assertEqual(empty_allowed_channel.type_name, chan.type_name)
+
+    self.assertIsNone(chan.min_count)
+    self.assertEqual(empty_allowed_channel.min_count, 0)
+
 
 if __name__ == '__main__':
   tf.test.main()

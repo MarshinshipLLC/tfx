@@ -113,6 +113,8 @@ class BaseChannel(abc.ABC, Generic[_AT]):
 
   Attributes:
     type: The artifact type class that the Channel takes.
+    min_count: The minimum amount of Artifacts in this channel before it will
+      trigger a node. None if not explicetely set.
   """
 
   def __init__(self, type: Type[_AT]):  # pylint: disable=redefined-builtin
@@ -123,6 +125,11 @@ class BaseChannel(abc.ABC, Generic[_AT]):
     self._artifact_type = type
     self._input_trigger = None
     self._original_channel = None
+    self._min_count = None
+
+  @property
+  def min_count(self) -> Optional[int]:
+    return self._min_count
 
   @property
   def type(self) -> Type[_AT]:  # pylint: disable=redefined-builtin
@@ -164,7 +171,7 @@ class BaseChannel(abc.ABC, Generic[_AT]):
     # Save a copy of the original object.
     self._original_channel = self
 
-    result = copy.copy(self)
+    result = copy.deepcopy(self)
     result._input_trigger = input_trigger  # pylint: disable=protected-access
     return result
 

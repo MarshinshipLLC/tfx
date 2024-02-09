@@ -25,8 +25,9 @@ symbols are already available from one of followings:
 Consider other symbols as private.
 """
 
+import copy
 import typing
-from typing import Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Type, cast
+from typing import Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Set, Type, cast, TypeVar
 
 from tfx.dsl.placeholder import placeholder as ph
 from tfx.proto.orchestration import placeholder_pb2
@@ -273,3 +274,24 @@ def encode_placeholder_with_channels(
     for p in placeholder.traverse():
       if isinstance(p, ph.ChannelWrappedPlaceholder):
         p.set_key(None)
+
+_CT = TypeVar('_CT', bound=channel.BaseChannel)
+
+
+def allow_empty_from(chan: _CT) -> _CT:
+  """Returns a copy of the provided channel, which is allowed to be empty.
+
+  If the return value of this function is used as an input to a component, then
+  the corresponding ChannelParameter of that component's input spec must either:
+    1. Not have `allow_empty` set
+    2. The value of `allow_empty`, if set, must be True
+
+  Args:
+    chan: The BaseChannel to create a new, empty allowed channel from
+
+  Returns:
+    An otherwise identical BaseChannel which is allowed to be empty.
+  """
+  new_channel = copy.deepcopy(chan)
+  new_channel._min_count = 0  # pylint: disable=protected-access
+  return new_channel
